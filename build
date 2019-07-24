@@ -1,0 +1,16 @@
+#!/bin/sh
+export GO15VENDOREXPERIMENT=1
+
+FMT="*.go"
+echo "Checking gofmt..."
+fmtRes=$(gofmt -l $FMT)
+if [ -n "${fmtRes}" ]; then
+    echo -e "gofmt checking failed:\n${fmtRes}"
+    exit 255
+fi
+
+echo "Building plugins"
+go install
+cp $GOPATH/bin/trunk ./k8s-fpga-device-plugin
+sudo docker build -t="leviccui/k8s-fpga-device-plugin:demo49" .
+sudo docker push leviccui/k8s-fpga-device-plugin:demo49
